@@ -1,23 +1,57 @@
 [project]
-name = "nexum-commons"
+name = "nexum-public-commons"
 description = "Common utilities for Nexum ecosystem"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "MIT"
 authors = [
     { name = "Dioleti", email = "fabricio@dl.tec.br" }
 ]
 version = "0.0.1"
 requires-python = ">=3.11"
 dependencies = [
-    "pytest>=9.1.1",
+    "python-dotenv>=1.2.2",
+    "load-dotenv>=0.1.0",
+    "setuptools>=83.0.0",
+    "hatch>=1.17.1",
 ]
 
 [project.optional-dependencies]
+datadog = [
+    "ddtrace>=4.11.0"
+]
+
+elastic = [
+    "elastic-apm>=6.26.2"
+]
+
 dev = [
-    "pytest",
+    "pytest>=9.1.1",
     "pytest-cov"
 ]
 
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.hooks.custom]
+path = "scripts/generate_stubs.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nexum"]
+include = ["src/nexum/errors.pyi"]
+
+[tool.mypy]
+ignore_missing_imports = true
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "src"
+exclude = [
+    "src/.*/__init__\\.py",
+]
+
+[[tool.mypy.overrides]]
+module = "nexum.errors.*"
+ignore_errors = true
+
+[tool.ruff]
+exclude = ["src/nexum/__init__.py"]
